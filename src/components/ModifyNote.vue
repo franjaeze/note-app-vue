@@ -76,46 +76,4 @@ export default {
 };
 </script>
   
-<style>
-.inputsCreate {
-    font-size: 12px;
-    margin: 5px;
-}
-
-.tag {
-    background-color: #6d6868c7;
-    border-radius: 9px;
-    display: inline-block;
-    color: #fffffff6;
-    letter-spacing: 0.5px;
-
-}
-
-input {
-    width: fit-content;
-    display: inline-block;
-}
-
-.createNote {
-    border-radius: 10%;
-    border-style: solid;
-    border-color: black;
-    background-color: #adacacc7;
-    display: inline-flex;
-    box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
-    font-family: "Open Sans", monospace;
-    transition: box-shadow .15s, transform .15s;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    white-space: nowrap;
-    will-change: box-shadow, transform
-}
-
-.createNote:hover {
-    transform: translateY(-10px);
-}
-
-.createNote:focus {
-    box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
-}</style>
+<style> </style>
