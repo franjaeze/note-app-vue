@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import NotesView from '../components/NotesView.vue'
 import CreateNote from '../components/CreateNote.vue'
+import ModifyNote from '../components/ModifyNote.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -14,6 +15,13 @@ const router = createRouter({
     path: '/create',
     name: 'create',
     component: CreateNote
+ 
+  },
+  {
+    path: '/modify/:index',
+    name: 'modify',
+    component: ModifyNote,
+    
  
   }
 ]

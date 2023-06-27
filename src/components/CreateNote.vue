@@ -29,7 +29,7 @@
             <div class="me-1 col-2">
               <label for="tag" class="">Categories </label></div>
               <div class="col-8" type="text" id="tag" placeholder="Tags" v-if="newNote.tags">
-                <button class="btn-success" disabled  v-for="t in newNote.tags" :key="t.index"> {{ t }}</button>
+                <button class="btn btn-light" @click="deleteTag(t)"  v-for="t in newNote.tags" :key="t.index"><i class="fas fa-tag me-1"></i> {{ t }} <i class="fas fa-times ms-1"></i></button>
               </div>
             
 
@@ -50,7 +50,7 @@
             <div class="col-8"></div>
             <div class="col-4 d-flex">
               <button class="btn btn-small btn-primary m-1 me-1" @click="addNewNote(newNote)"> Create</button>
-              <button class="btn btn-small btn-danger m-1 me-1" @click="close"> Cancel</button>
+              <button class="btn btn-small btn-danger m-1 me-1" @click="redirect"> Cancel</button>
             </div>
           </div>
         </div>
@@ -87,22 +87,31 @@ export default {
   },
   methods: {
     addTag() {
-      this.newNote = {...this.newNote, editedDate: new Date().toISOString().replace(/T.*/,'').split('-').reverse().join('-'), 
-                          editedHour: new Date().getHours()
-                          , editedMinute: new Date().getMinutes()}
+     
       this.newNote.tags.push(this.newNote.tag);
       this.newNote.tag = '';
     },
-
-    close() {
-      this.$emit('close')
+    deleteTag(tag){
+      const indexOftag = this.newNote.tags.indexOf(tag);
+      this.newNote.tags.splice(indexOftag, 1)
     },
+    redirect() {
+            this.$router.push({ 
+                  name: 'notes'                  
+                 }); 
+        },
+
+     
     async addNewNote(newNote) {
 
       try {
         //await noteService.addToList(this.newNote)
+        newNote.archived = false
+        newNote = {...this.newNote, editedDate: new Date().toISOString().replace(/T.*/,'').split('-').reverse().join('-'), 
+                          editedHour: new Date().getHours()
+                          , editedMinute: new Date().getMinutes()}
         this.userStore.addNote(newNote)
-        console.log(this.userStore.getNotes)
+        
         this.$router.push({ name: 'notes' });
       //  this.close();
 
