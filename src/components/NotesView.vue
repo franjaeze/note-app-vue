@@ -11,23 +11,28 @@
 
 
 
-    <select class="form-select form-select-sm" v-model="filterBy" aria-label=".form-select-sm example">
+    <select class="form-select form-select-sm" @change="filterOn($event)" v-model="filterBy"
+      aria-label=".form-select-sm example">
       <option selected> {{ filterBy }}</option>
       <option v-for="(t, index) in getAllTags()" :key="index" :value=t> {{ t }}</option>
+      <option value="All"> All</option>
+    </select>
 
-    </select> <button class="btn btn-small btn-success" @click="console.log(filterBy)"> Filter</button>
     <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in filterTag()" :key="index"
-        :note="note" />
+      :note="note" />
 
-    <div v-if="getShowArchived">
-      <h1> Active Notes</h1>
-      <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getActiveNotes" :key="index"
-        :note="note" />
-    </div>
-    <div v-else>
-      <h1> Archived Notes</h1>
-      <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getArchivedNotes"
-        :key="index" :note="note" />
+    <div v-if="!threIsAFilter">
+      <div v-if="getShowArchived">
+        <h1> Active Notes</h1>
+        <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getActiveNotes"
+          :key="index" :note="note" />
+      </div>
+      <div v-else>
+        <h1> Archived Notes</h1>
+        <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getArchivedNotes"
+          :key="index" :note="note" />
+
+      </div>
     </div>
   </div>
 </template>
@@ -69,6 +74,7 @@ export default {
   data() {
     return {
       notes: [],
+      threIsAFilter: false,
       showForm: false,
       filterBy: 'Filter by',
       newNote: {
@@ -131,16 +137,31 @@ export default {
       });
 
       // Convierte el conjunto de tagsUnicos de vuelta a un array y devuélvelo
-      console.log(Array.from(uniqueTags))
+
       return Array.from(uniqueTags);
     },
 
     filterTag() {
-      const notesFiltered = this.getNotes.filter(note => note.tags.includes(this.filterBy));
-      console.log(notesFiltered);
-      return notesFiltered;
-    }
+      if (this.filterBy === "All") {
+        this.threIsAFilter = false;
+      } else {
+        const notesFiltered = this.getNotes.filter(note => note.tags.includes(this.filterBy));
 
+        return notesFiltered;
+      }
+
+    },
+    filterOn(event) {
+      const selectedValue = event.target.value;
+     
+      console.log(selectedValue)
+      if (selectedValue === "All") {
+        this.threIsAFilter = false;
+      } else {
+        this.threIsAFilter = true;
+      }
+      this.filterBy = selectedValue;
+    }
 
   }
 

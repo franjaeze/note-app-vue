@@ -3,7 +3,7 @@ import { defineStore, MutationType } from "pinia";
 export const useUserStore = defineStore("user", {
     state: () => ({
         userNotes: [],
-        showArchived : false,
+        showArchived : true,
     }),
     
     getters: {
