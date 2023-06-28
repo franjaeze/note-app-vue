@@ -27,11 +27,13 @@
           <div class="row">
 
             <div class="me-1 col-2">
-              <label for="tag" class="">Categories </label></div>
-              <div class="col-8" type="text" id="tag" placeholder="Tags" v-if="newNote.tags">
-                <button class="btn btn-light" @click="deleteTag(t)"  v-for="t in newNote.tags" :key="t.index"><i class="fas fa-tag me-1"></i> {{ t }} <i class="fas fa-times ms-1"></i></button>
-              </div>
-            
+              <label for="tag" class="">Categories </label>
+            </div>
+            <div class="col-8" type="text" id="tag" placeholder="Tags" v-if="newNote.tags">
+              <button class="btn btn-light" @click="deleteTag(t)" v-for="t in newNote.tags" :key="t.index"><i
+                  class="fas fa-tag me-1"></i> {{ t }} <i class="fas fa-times ms-1"></i></button>
+            </div>
+
 
 
 
@@ -69,57 +71,57 @@
 
 import { useUserStore } from "../stores/notes";
 import { storeToRefs } from "pinia";
-
+import  notesServices  from "../services/notesServices.js"
 
 
 export default {
 
   setup() {
-  const userStore = useUserStore();
+    const userStore = useUserStore();
     const { userNotes, getNotes, addNote } = storeToRefs(userStore);
-  
-    return { 
-    userNotes,
-    addNote,
-    getNotes,
-    userStore
+
+    return {
+      userNotes,
+      addNote,
+      getNotes,
+      userStore
     };
   },
   methods: {
     addTag() {
-     
+
       this.newNote.tags.push(this.newNote.tag);
       this.newNote.tag = '';
     },
-    deleteTag(tag){
+    deleteTag(tag) {
       const indexOftag = this.newNote.tags.indexOf(tag);
       this.newNote.tags.splice(indexOftag, 1)
     },
     redirect() {
-            this.$router.push({ 
-                  name: 'notes'                  
-                 }); 
-        },
-
-     
+      this.$router.push({
+        name: 'notes'
+      });
+    },
     async addNewNote(newNote) {
-
-      try {
+       try {
         //await noteService.addToList(this.newNote)
         newNote.archived = false
-        newNote = {...this.newNote, editedDate: new Date().toISOString().replace(/T.*/,'').split('-').reverse().join('-'), 
-                          editedHour: new Date().getHours()
-                          , editedMinute: new Date().getMinutes()}
-        this.userStore.addNote(newNote)
-        
+        newNote = {
+          ...this.newNote, editedDate: new Date().toISOString().replace(/T.*/, '').split('-').reverse().join('-'),
+          editedHour: new Date().getHours()
+          , editedMinute: new Date().getMinutes()
+        }
+        //this.userStore.addNote(newNote)
+        await notesServices.addNote(newNote);
         this.$router.push({ name: 'notes' });
-      //  this.close();
-
+        //  this.close();
       } catch (e) {
         alert(e);
       }
     },
-  }, data() {
+  },
+
+  data() {
     return {
       notes: [],
 

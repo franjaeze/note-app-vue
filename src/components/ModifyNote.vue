@@ -69,7 +69,8 @@
 <script>
   import { useUserStore } from "../stores/notes";
 import { storeToRefs } from "pinia";
-   
+import  notesServices  from "../services/notesServices.js"
+
 export default {
     setup() {
     const userStore = useUserStore();
@@ -84,7 +85,7 @@ export default {
   },
     async mounted() {
    
-    this.noteToModify = this.userStore.userNotes[this.$route.params.index]
+    this.noteToModify = await notesServices.findNote(this.$route.params.id)
       console.log(this.noteToModify)
     
   },
@@ -115,11 +116,11 @@ export default {
                 noteToModify = {...this.noteToModify, editedDate: new Date().toISOString().replace(/T.*/,'').split('-').reverse().join('-'), 
                           editedHour: new Date().getHours()
                           , editedMinute: new Date().getMinutes()}
-                this.userNotes.splice(this.indexTurno, 1, noteToModify);
+                await notesServices.updateNote(this.idNote, noteToModify);
                     this.$router.push({ name: 'notes' });
                 
             } catch (e) {
-                alert(e);
+                alert(e + "something went wrong during the update");
             }
         }, 
        
@@ -129,7 +130,7 @@ export default {
         return {
             notes: [],
            noteToModify: {},
-            indexTurno: this.$route.params.index
+            idNote: this.$route.params.id
 
 
         };

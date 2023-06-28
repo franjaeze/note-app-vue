@@ -1,4 +1,5 @@
 import { defineStore, MutationType } from "pinia";
+import notesService from '../services/notesServices.js'
 
 export const useUserStore = defineStore("user", {
     state: () => ({
@@ -34,4 +35,9 @@ export const useUserStore = defineStore("user", {
             this.showArchived =  !this.showArchived;
             this.$patch({ type: MutationType.showArchived, payload: this.showArchived });
     },
+        async takeNoteFromServer(){
+            console.log( await notesService.listNotes())
+            this.userNotes = await notesService.listNotes() 
+            return this.userNotes
+        }
 }});

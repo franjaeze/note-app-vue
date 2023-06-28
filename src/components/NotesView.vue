@@ -3,7 +3,8 @@
     <div class="container">
 
     </div>
-    <div v-if="getNotes < 1">
+    <button @click="getFromServer()" class="btn btn-small btn-success"> Bring from server</button>
+    <div v-if="notes < 1">
       <h1> Here you will see your notes, as soon as you start to doing them!</h1>
     </div>
 
@@ -24,12 +25,12 @@
     <div v-if="!threIsAFilter">
       <div v-if="getShowArchived">
         <h1> Active Notes</h1>
-        <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getActiveNotes"
+        <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getActiveNotes()"
           :key="index" :note="note" />
       </div>
       <div v-else>
         <h1> Archived Notes</h1>
-        <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getArchivedNotes"
+        <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getArchivedNotes()"
           :key="index" :note="note" />
 
       </div>
@@ -41,6 +42,7 @@
 import SimpleNote from "../components/SimpleNote.vue";
 import { useUserStore } from "../stores/notes";
 import { storeToRefs } from "pinia";
+import  notesServices  from "../services/notesServices.js"
 
 
 export default {
@@ -50,20 +52,16 @@ export default {
   },
   setup() {
     const userStore = useUserStore();
-    const { userNotes, getNotes, addNote,
-      removeNote, getActiveNotes, getArchivedNotes,
-      getShowArchived } = storeToRefs(userStore);
+    const { userNotes, getNotes, 
+      getShowArchived, takeNoteFromServer } = storeToRefs(userStore);
 
 
     return {
       userNotes,
-      addNote,
       getNotes,
       userStore,
-      removeNote,
-      getActiveNotes,
-      getArchivedNotes,
       getShowArchived,
+      takeNoteFromServer,
 
     };
   }
@@ -84,27 +82,41 @@ export default {
       }
     }
   },
-  methods:
-  {
+ async  mounted(){
+     await this.getNotesFromServer();
+  },
+  methods:{
+  getFromServer(){
+   this.userStore.takeNoteFromServer();
+    console.log (this.userNotes)
+  },
+  
     showIt() {
       this.showForm = !this.showForm;
     },
-    updateNote(note) {
-      console.log(note)
-      const index = this.userNotes.indexOf(note);
-
+    updateNote(id) {
+      
       this.$router.push({
         name: 'modify',
-        params: { index: index }
+        params: { id: id }
       });
 
     },
-    deleteNote(note) {
+
+    async getNotesFromServer(){
+      try {
+       this.notes = await notesServices.listNotes()
+      } catch (e) {
+        alert("could not load notes " + e);
+      }
+    },
+    async deleteNote(noteId) {
       const ifRemove = confirm('Do you really want to delete it ?');
       if (ifRemove) {
         try {
 
-          this.userStore.removeNote(note)
+          await notesServices.deleteNote(noteId)
+          this.getNotesFromServer()
           alert('Note deleted!')
         }
         catch (e) {
@@ -128,7 +140,7 @@ export default {
       const uniqueTags = new Set();
 
       // Itera sobre cada objeto en el array de userNotes
-      this.getNotes.forEach((userNote) => {
+      this.notes.forEach((userNote) => {
         // Itera sobre cada tag en el array de tags del objeto actual
         userNote.tags.forEach((tag) => {
           // Agrega el tag al conjunto de tagsUnicos
@@ -140,12 +152,18 @@ export default {
 
       return Array.from(uniqueTags);
     },
+    getActiveNotes(){
+      return this.notes.filter(note => note.archived === false);
+    },
+    getArchivedNotes(){
+      return this.notes.filter(note => note.archived === true);
+    },
 
     filterTag() {
       if (this.filterBy === "All") {
         this.threIsAFilter = false;
       } else {
-        const notesFiltered = this.getNotes.filter(note => note.tags.includes(this.filterBy));
+        const notesFiltered = this.notes.filter(note => note.tags.includes(this.filterBy));
 
         return notesFiltered;
       }

@@ -18,7 +18,7 @@ const router = createRouter({
  
   },
   {
-    path: '/modify/:index',
+    path: '/modify/:id',
     name: 'modify',
     component: ModifyNote,
     
