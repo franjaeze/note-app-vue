@@ -1,4 +1,10 @@
 <template>
+
+  <div v-if="loading" class="d-flex justify-content-center">
+      <div class="spinner-border text-success" style="width: 3rem; height: 3rem;" role="status">
+  <span class="sr-only">Loading...</span></div>
+</div>
+  <div v-if="!loading">
   <div class="createNote">
     <form action="">
 
@@ -64,7 +70,7 @@
 
 
     </form>
-  </div>
+  </div></div>
 </template>
   
 <script>
@@ -72,6 +78,7 @@
 import { useUserStore } from "../stores/notes";
 import { storeToRefs } from "pinia";
 import  notesServices  from "../services/notesServices.js"
+ 
 
 
 export default {
@@ -103,6 +110,7 @@ export default {
       });
     },
     async addNewNote(newNote) {
+      this.loading = true;
        try {
         //await noteService.addToList(this.newNote)
         newNote.archived = false
@@ -117,6 +125,8 @@ export default {
         //  this.close();
       } catch (e) {
         alert(e);
+      } finally{ 
+        this.loading = false;
       }
     },
   },
@@ -124,7 +134,7 @@ export default {
   data() {
     return {
       notes: [],
-
+      loading: false,
       newNote: { title: "", body: "", tags: [] },
 
 

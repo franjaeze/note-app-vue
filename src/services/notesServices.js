@@ -48,5 +48,15 @@ export default {
         } catch (error) {
             throw "Error de conexion"
         }
+    },
+    
+    async updateStateNote(id, archived) {
+        try {
+            const update = { "archived": !archived}
+           await apiClient.patch("/" + id, update)
+             
+        } catch (error) {
+            throw "Error de conexion"
+        }
     }
 }

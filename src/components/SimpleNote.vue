@@ -20,7 +20,7 @@
                     <div  class="mt-2"  >
                         <span class="cursor me-2" @click="deleteNote(noteRender._id)"> <i class="fas fa-trash fa-2x"></i></span>
                         <span class="cursor me-2" @click="modifyNote(noteRender._id)"> <i class="fas fa-pencil-alt fa-2x"></i> </span>
-                        <span class="cursor" @click="archiveNote(noteRender)"> <i class="fas fa-archive fa-2x"></i></span>
+                        <span class="cursor" @click="archiveNote(noteRender._id, noteRender.archived)"> <i class="fas fa-archive fa-2x"></i></span>
                    </div>
                 </div>
             </div>
@@ -62,8 +62,8 @@ export default {
              
             this.$emit('update-note', noteId)
         },
-        archiveNote(){
-            this.noteRender.archived = !this.noteRender.archived;
+        archiveNote(noteId, archived){
+            this.$emit('archive-note', noteId, archived)
             
         }
 

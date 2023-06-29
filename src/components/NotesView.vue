@@ -3,13 +3,17 @@
     <div class="container">
 
     </div>
-    <button @click="getFromServer()" class="btn btn-small btn-success"> Bring from server</button>
+ 
     <div v-if="notes < 1">
       <h1> Here you will see your notes, as soon as you start to doing them!</h1>
+
     </div>
+<div v-if="loading" class="d-flex justify-content-center">
+      <div class="spinner-border text-success" style="width: 3rem; height: 3rem;" role="status">
+  <span class="sr-only">Loading...</span></div>
+</div>
 
-
-
+  <div v-if="!loading">
 
 
     <select class="form-select form-select-sm" @change="filterOn($event)" v-model="filterBy"
@@ -19,23 +23,32 @@
       <option value="All"> All</option>
     </select>
 
-    <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in filterTag()" :key="index"
+    <SimpleNote @delete-note="deleteNote"
+                 @update-note="updateNote" 
+                 @archive-note="archiveNote"
+                 v-for="(note, index) in filterTag()" :key="index"
       :note="note" />
 
     <div v-if="!threIsAFilter">
       <div v-if="getShowArchived">
         <h1> Active Notes</h1>
-        <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getActiveNotes()"
+        <SimpleNote @delete-note="deleteNote" 
+                    @update-note="updateNote" 
+                    @archive-note="archiveNote"
+                    v-for="(note, index) in getActiveNotes()"
           :key="index" :note="note" />
       </div>
       <div v-else>
         <h1> Archived Notes</h1>
-        <SimpleNote @delete-note="deleteNote" @update-note="updateNote" v-for="(note, index) in getArchivedNotes()"
+        <SimpleNote @delete-note="deleteNote" 
+                    @update-note="updateNote"
+                    @archive-note="archiveNote"
+                     v-for="(note, index) in getArchivedNotes()"
           :key="index" :note="note" />
 
       </div>
     </div>
-  </div>
+  </div></div>
 </template>
 
 <script>
@@ -75,6 +88,7 @@ export default {
       threIsAFilter: false,
       showForm: false,
       filterBy: 'Filter by',
+      loading: false,
       newNote: {
         title: '',
         tag: '  ',
@@ -102,17 +116,32 @@ export default {
       });
 
     },
+     async archiveNote(id, archived){
+      this.loading = true;
+      try {
+      await notesServices.updateStateNote(id, archived)
+       }  catch (e){
+        console.log ("could not update the state " + e )
+       } finally {
+        this.loading = false;
+        this.getNotesFromServer()
+       }
+      },
 
     async getNotesFromServer(){
+      this.loading= true;
       try {
        this.notes = await notesServices.listNotes()
       } catch (e) {
         alert("could not load notes " + e);
+      } finally {
+        this.loading= false;
       }
     },
     async deleteNote(noteId) {
       const ifRemove = confirm('Do you really want to delete it ?');
       if (ifRemove) {
+        this.loading = true;
         try {
 
           await notesServices.deleteNote(noteId)
@@ -121,6 +150,8 @@ export default {
         }
         catch (e) {
           alert("Se produjo un error");
+        } finally {
+          this.loading = false;
         }
       }
     },
