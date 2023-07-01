@@ -16,18 +16,19 @@
   <div v-if="!loading">
 
 
-    <select class="form-select form-select-sm" @change="filterOn($event)" v-model="filterBy"
+    <select class="form-select form-select-sm" @change="filterOn($event)"  
       aria-label=".form-select-sm example">
       <option selected> {{ filterBy }}</option>
       <option v-for="(t, index) in getAllTags()" :key="index" :value=t> {{ t }}</option>
       <option value="All"> All</option>
-    </select>
-
+    </select>  
+<div v-if="state.notesFiltered">
     <SimpleNote @delete-note="deleteNote"
                  @update-note="updateNote" 
                  @archive-note="archiveNote"
-                 v-for="(note, index) in filterTag()" :key="index"
-      :note="note" />
+                 v-for="(note, index) in state.notesFiltered" 
+                 :key="`note_${index}_${filterBy}`"
+                  :note="note" /></div>
 
     <div v-if="!threIsAFilter">
       <div v-if="getShowArchived">
@@ -56,6 +57,7 @@ import SimpleNote from "../components/SimpleNote.vue";
 import { useUserStore } from "../stores/notes";
 import { storeToRefs } from "pinia";
 import  notesServices  from "../services/notesServices.js"
+import {reactive } from 'vue';                                            
 
 
 export default {
@@ -64,6 +66,9 @@ export default {
     SimpleNote
   },
   setup() {
+    const state = reactive({
+      notesFiltered:[]
+    })
     const userStore = useUserStore();
     const { userNotes, getNotes, 
       getShowArchived, takeNoteFromServer } = storeToRefs(userStore);
@@ -75,6 +80,7 @@ export default {
       userStore,
       getShowArchived,
       takeNoteFromServer,
+      state,
 
     };
   }
@@ -89,6 +95,7 @@ export default {
       showForm: false,
       filterBy: 'Filter by',
       loading: false,
+      notesFiltered:[],
       newNote: {
         title: '',
         tag: '  ',
@@ -99,6 +106,7 @@ export default {
  async  mounted(){
      await this.getNotesFromServer();
   },
+  
   methods:{
   getFromServer(){
    this.userStore.takeNoteFromServer();
@@ -194,22 +202,25 @@ export default {
       if (this.filterBy === "All") {
         this.threIsAFilter = false;
       } else {
-        const notesFiltered = this.notes.filter(note => note.tags.includes(this.filterBy));
-
-        return notesFiltered;
+        this.state.notesFiltered = this.notes.filter(note => note.tags.includes(this.filterBy));
+       
+      
+         
       }
 
     },
     filterOn(event) {
       const selectedValue = event.target.value;
-     
-      console.log(selectedValue)
+      this.state.notesFiltered   = []
+      this.filterBy = '';
+  
       if (selectedValue === "All") {
         this.threIsAFilter = false;
       } else {
         this.threIsAFilter = true;
       }
       this.filterBy = selectedValue;
+      this.filterTag();
     }
 
   }

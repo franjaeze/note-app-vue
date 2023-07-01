@@ -1,24 +1,19 @@
 <template>
-<NavbarComponent  @show-archived="showArchived"/>
+<NavbarComponent />
 <div class="m-5">
-  <router-view :show-archived="setArchived"/></div>
+  <router-view/></div>
 </template>
 
 <script>
 import NavbarComponent from './components/NavbarComponent.vue';
-import { useUserStore } from './stores/notes';
+
 
 
 export default{
-  components:{ NavbarComponent
+  components:{ NavbarComponent, 
 
 },
 
-methods:{
-  showArchived() {
-     useUserStore.setShowArchived(true) 
-    }
-}
 } 
 
 </script>
