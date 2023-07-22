@@ -1,6 +1,6 @@
 import axios from 'axios'
 const apiClient = axios.create({
-    baseURL: 'http://localhost:5000/notes',
+    baseURL: 'http://localhost:5000/notes',  /* https://web-production-b8b7.up.railway.app/notes */
     headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json'

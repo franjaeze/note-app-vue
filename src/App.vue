@@ -1,7 +1,7 @@
 <template>
 <NavbarComponent />
-<div class="m-5">
-  <router-view/></div>
+ 
+  <router-view/>  
 </template>
 
 <script>
